@@ -19,3 +19,23 @@ describe("A #section definition", function()
 		test("## Título da subseção", nil)
 	end)
 end)
+
+describe("An #inlinemath definition", function()
+	local test = function(text, expected)
+		local processor = function(t) return "[" .. t .. "]" end
+		result = parser.inlinemath(processor):match(text)
+		assert.are.equal(expected, result)
+	end
+
+	it("should find the formulas", function()
+		test("$\\sum_{k=1}^10 k^2$", "[$\\sum_{k=1}^10 k^2$]")
+	end)
+
+	it("shouldn't match an expression preceded by two dollar signs", function()
+		test("$$\\sum_{k=1}^10 k^2$", nil)
+	end)
+
+	it("should find only spaces", function()
+		test("$ $\\sum_{k=1}^10 k^2$", "[$ $]")
+	end)
+end)
