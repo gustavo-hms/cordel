@@ -1,20 +1,24 @@
 local lpeg = require "lpeg"
 
+local function buildgrammar(processors)
+	local dollar = lpeg.P "$"
+	local any = lpeg.P(1)
+
+	return lpeg.P {
+		"document",
+		document = lpeg.V("text")^0 * -1,
+		text = lpeg.V "inline" + (lpeg.V "plaintext" * lpeg.V("text")^0),
+		inline = lpeg.V "inlinemath",
+		inlinemath = lpeg.C(dollar * (any - dollar)^0 * dollar) / processors.inlinemath,
+		plaintext = lpeg.C((any - lpeg.V "inline")^1) / processors.plaintext
+	}
+end
+
 local M = {}
 
-local any = lpeg.P(1)
-
-function M.inlinemath(processor)
-	local dollar = lpeg.P "$"
-	return lpeg.C(dollar * (any - dollar)^1 * dollar) / processor
-end
-
-function M.section(processor)
-	return lpeg.P "# " * lpeg.C(any^1) / processor
-end
-
-function M.subsection(processor)
-	return lpeg.P "## " * lpeg.C(any^1) / processor
+function M.parse(text, processors)
+	local grammar = buildgrammar(processors)
+	return lpeg.Ct(grammar):match(text)
 end
 
 return M

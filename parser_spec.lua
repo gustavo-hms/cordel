@@ -1,41 +1,49 @@
 parser = require "parser"
 
-describe("A #section definition", function()
-	local test = function(text, expected)
-		local processor = function(t) return "[" .. t .. "]" end
-		result = parser.section(processor):match(text)
-		assert.are.equal(expected, result)
-	end
-
-	it("should find the right text for section title", function()
-		test("# Título da seção", "[Título da seção]")
-	end)
-
-	it("should ignore hashes not at the begining of line", function()
-		test("Título da # seção", nil)
-	end)
-
-	it("should ignore subsections", function()
-		test("## Título da subseção", nil)
-	end)
-end)
+local noopfunction = function() end
+local mockprocessors = {
+	inlinemath = noopfunction,
+	plaintext = noopfunction
+}
 
 describe("An #inlinemath definition", function()
+	local mathtag = "inlinemath"
+
 	local test = function(text, expected)
-		local processor = function(t) return "[" .. t .. "]" end
-		result = parser.inlinemath(processor):match(text)
-		assert.are.equal(expected, result)
+		mockprocessors.inlinemath = function(t) return {mathtag, t} end
+		result = parser.parse(text, mockprocessors)
+		assert.are.same(expected, result)
 	end
 
 	it("should find the formulas", function()
-		test("$\\sum_{k=1}^10 k^2$", "[$\\sum_{k=1}^10 k^2$]")
+		local text = [[$\sum_{k=1}^10 k^2 = 17$]]
+		local expected = {
+			{mathtag, text}
+		}
+		test(text, expected)
 	end)
 
-	it("shouldn't match an expression preceded by two dollar signs", function()
-		test("$$\\sum_{k=1}^10 k^2$", nil)
+	it("should match only the two dollar signs", function()
+		local expected = {
+			{mathtag, "$$"}
+		}
+		test([[$$\sum_{k=1}^10 k^2$]], expected)
 	end)
 
 	it("should find only spaces", function()
-		test("$ $\\sum_{k=1}^10 k^2$", "[$ $]")
+		local expected = {
+			{mathtag, "$ $"}
+		}
+		test([[$ $\sum_{k=1}^10 k^2$]], expected)
+	end)
+
+	it("should find two inline math expressions", function()
+		local firstpart = [[$\sum_{k=1}^10$]]
+		local secondpart = [[$ k^2$]]
+		local expected = {
+			{mathtag, firstpart},
+			{mathtag, secondpart}
+		}
+		test(firstpart .. [[ algo no meio ]] .. secondpart, expected)
 	end)
 end)
