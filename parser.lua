@@ -1,16 +1,21 @@
 local lpeg = require "lpeg"
 
-local function buildgrammar(processors)
-	local dollar = lpeg.P "$"
-	local any = lpeg.P(1)
+local P, S, V = lpeg.P, lpeg.S, lpeg.V
+local C, Ct = lpeg.C, lpeg.Ct
 
-	return lpeg.P {
+local function buildgrammar(processors)
+	local dollar = P"$"
+	local any = P(1)
+	local emptyline = P"\n\n"
+
+	return P {
 		"document",
-		document = lpeg.V("text")^0 * -1,
-		text = lpeg.V "inline" + (lpeg.V "plaintext" * lpeg.V("text")^0),
-		inline = lpeg.V "inlinemath",
-		inlinemath = lpeg.C(dollar * (any - dollar)^0 * dollar) / processors.inlinemath,
-		plaintext = lpeg.C((any - lpeg.V "inline")^1) / processors.plaintext
+		document = V"paragraph" * -1,
+		paragraph = V"text" ^0 * (emptyline^1 + -1),
+		text = V"inline" + (V"plaintext" * V"text" ^0),
+		inline = V"inlinemath",
+		inlinemath = C(dollar * (any - dollar)^0 * dollar) / processors.inlinemath,
+		plaintext = C((any - V"inline")^1) / processors.plaintext
 	}
 end
 
@@ -18,7 +23,7 @@ local M = {}
 
 function M.parse(text, processors)
 	local grammar = buildgrammar(processors)
-	return lpeg.Ct(grammar):match(text)
+	return Ct(grammar):match(text)
 end
 
 return M
