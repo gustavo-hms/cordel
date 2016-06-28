@@ -1,13 +1,13 @@
 local lpeg = require "lpeg"
 
-local export = {}
+local M = {}
 
-local section = lpeg.P "# " * lpeg.C(lpeg.P(1)^1)
-local subsection = lpeg.P "## " * lpeg.C(lpeg.P(1)^1)
-
-function export.parse(text)
-	local document = lpeg.Ct(section) + lpeg.Ct(subsection)
-	return document:match(text)
+function M.section(processor)
+	return lpeg.P "# " * lpeg.C(lpeg.P(1)^1) / processor
 end
 
-return export
+function M.subsection(processor)
+	return lpeg.P "## " * lpeg.C(lpeg.P(1)^1) / processor
+end
+
+return M
