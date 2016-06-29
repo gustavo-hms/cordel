@@ -7,9 +7,18 @@ local mockprocessors = {
 	plaintext = noopfunction
 }
 
+local function copytable(t)
+	local tt = {}
+	for k,v in pairs(t) do
+		tt[k] = v
+	end
+	return tt
+end
+
 local function test(definition, text, expected)
-	mockprocessors[definition] = function(t) return {definition, t} end
-	result = parser.parse(text, mockprocessors)
+	processors = copytable(mockprocessors)
+	processors[definition] = function(t) return {definition, t} end
+	result = parser.parse(text, processors)
 	assert.are.same(expected, result)
 end
 
@@ -84,5 +93,52 @@ se ouve palpitar um bicho.
 			{tag, "O relógio"}
 		}
 		test(tag, text, expected)
+	end)
+end)
+
+describe("A #complete definition", function()
+	it("should generate the right structure", function()
+		local doc = [[
+# O monstrengo
+
+O monstrengo que está no fim do mar
+Na noite de breu ergueu-se a voar;
+À roda da nau voou três vezes,
+Voou três vezes a chiar,
+
+# Um título de seção com $fórmula = \theta^2$ incluída
+
+A força que um campo magnético aplica a uma carga movendo-se sobre ele é:
+$\mathbf{F}=q\left(\mathbf{v}\times\mathbf{B}\right)$.]]
+
+		local expected = {
+			{"section", {"plaintext", "O monstrengo"}},
+			{"paragraph",
+				{"plaintext",
+					"O monstrengo que está no fim do mar\n" ..
+					"Na noite de breu ergueu-se a voar;\n" ..
+					"À roda da nau voou três vezes,\n" ..
+					"Voou três vezes a chiar,"
+				}
+			},
+			{"section",
+				{"plaintext", "Um título de seção com "},
+				{"inlinemath", [[$fórmula = \theta^2$]]},
+				{"plaintext", " incluída"}
+			},
+			{"paragraph",
+				{"plaintext", "A força que um campo magnético aplica a uma carga movendo-se sobre ele é:\n"},
+				{"inlinemath", [[$\mathbf{F}=q\left(\mathbf{v}\times\mathbf{B}\right)$]]},
+				{"plaintext", "."}
+			}
+		}
+
+		processors = {}
+		for k,_ in pairs(mockprocessors) do
+			processors[k] = function(t) return {k, t} end
+		end
+
+		result = parser.parse(doc, processors)
+		assert.are.same(expected, result)
 	end)
 end)
