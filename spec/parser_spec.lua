@@ -1,9 +1,10 @@
 parser = require "parser"
 
-local noopfunction = function() end
+local noopfunction = 1
 local mockprocessors = {
 	inlinemath = noopfunction,
 	section = noopfunction,
+	paragraph = noopfunction,
 	plaintext = noopfunction
 }
 
@@ -133,12 +134,13 @@ $\mathbf{F}=q\left(\mathbf{v}\times\mathbf{B}\right)$.]]
 			}
 		}
 
-		processors = {}
-		for k,_ in pairs(mockprocessors) do
-			processors[k] = function(t) return {k, t} end
-		end
+		local processors = {}
+		processors.inlinemath = function(text) return {"inlinemath", text} end
+		processors.plaintext = function(text) return {"plaintext", text} end
+		processors.paragraph = function(...) return {"paragraph", {...}} end
+		processors.section = function(...) return {"section", {...}} end
 
-		result = parser.parse(doc, processors)
+		local result = parser.parse(doc, processors)
 		assert.are.same(expected, result)
 	end)
 end)

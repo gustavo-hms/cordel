@@ -1,7 +1,7 @@
 local lpeg = require "lpeg"
 
 local P, V = lpeg.P, lpeg.V
-local C, Ct = lpeg.C, lpeg.Ct
+local C, Ct, Cg = lpeg.C, lpeg.Ct, lpeg.Cg
 
 local function buildgrammar(processors)
 	local dollar = P"$"
@@ -10,10 +10,10 @@ local function buildgrammar(processors)
 
 	return P {
 		"document",
-		document = (V"section" + V"paragraph")^1 + -1,
-		section = P"# " * C(V"text") * emptyline^-1 / processors.section,
-		paragraph = V"text" * emptyline^-1,
-		text = V"inline" + (V"plaintext" * V"text" ^0),
+		document = (V"section" + V"paragraph")^1 * -1,
+		section = P"# " * Cg(V"text"^1) * emptyline^-1 / processors.section,
+		paragraph = Cg(V"text"^1 * emptyline^-1) / processors.paragraph,
+		text = V"inline" + V"plaintext",
 		inline = V"inlinemath",
 		inlinemath = C(dollar * (any - dollar)^0 * dollar) / processors.inlinemath,
 		plaintext = C((any - V"inline" - emptyline)^1) / processors.plaintext
