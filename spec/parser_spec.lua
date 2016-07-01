@@ -1,6 +1,6 @@
 parser = require "parser"
 
-local noopfunction = 1
+local noopfunction = 0
 local mockprocessors = {
 	inlinemath = noopfunction,
 	section = noopfunction,
@@ -16,58 +16,48 @@ local function copytable(t)
 	return tt
 end
 
-local function test(definition, text, expected)
-	processors = copytable(mockprocessors)
-	processors[definition] = function(t) return {definition, t} end
+local function test(text, expected, processors)
 	result = parser.parse(text, processors)
 	assert.are.same(expected, result)
 end
 
 describe("An #inlinemath definition", function()
-	local tag = "inlinemath"
+	local processors = copytable(mockprocessors)
+	processors.inlinemath = 1
+	processors.paragraph = function(...) return ... end
 
 	it("should find the formulas", function()
 		local text = [[$\sum_{k=1}^10 k^2 = 17$]]
-		local expected = {
-			{tag, text}
-		}
-		test(tag, text, expected)
+		local expected = {text}
+		test(text, expected, processors)
 	end)
 
 	it("should match only the two dollar signs", function()
-		local expected = {
-			{tag, "$$"}
-		}
-		test(tag, [[$$\sum_{k=1}^10 k^2$]], expected)
+		local expected = {"$$"}
+		test([[$$\sum_{k=1}^10 k^2$]], expected, processors)
 	end)
 
 	it("should find only spaces", function()
-		local expected = {
-			{tag, "$ $"}
-		}
-		test(tag, [[$ $\sum_{k=1}^10 k^2$]], expected)
+		local expected = {"$ $"}
+		test([[$ $\sum_{k=1}^10 k^2$]], expected, processors)
 	end)
 
 	it("should find two inline math expressions", function()
 		local firstpart = [[$\sum_{k=1}^10$]]
 		local secondpart = [[$ k^2$]]
-		local expected = {
-			{tag, firstpart},
-			{tag, secondpart}
-		}
-		test(tag, firstpart .. [[ algo no meio ]] .. secondpart, expected)
+		local expected = {firstpart, secondpart}
+		test(firstpart .. [[ algo no meio ]] .. secondpart, expected, processors)
 	end)
 end)
 
 describe("A #section definition", function()
-	local tag = "section"
+	local processors = copytable(mockprocessors)
+	processors.section = function(...) return ... end
 
 	it("should find a simple section", function()
 		local title = "Título da seção"
-		local expected = {
-			{tag, title}
-		}
-		test(tag, "# " .. title, expected)
+		local expected = {title}
+		test("# " .. title, expected, processors)
 	end)
 
 	it("should find two sections", function()
@@ -89,11 +79,8 @@ dentro das quais, como em jaula,
 se ouve palpitar um bicho.
 		]]
 
-		local expected = {
-			{tag, "Habitar o tempo"},
-			{tag, "O relógio"}
-		}
-		test(tag, text, expected)
+		local expected = {"Habitar o tempo", "O relógio"}
+		test(text, expected, processors)
 	end)
 end)
 
@@ -113,25 +100,27 @@ A força que um campo magnético aplica a uma carga movendo-se sobre ele é:
 $\mathbf{F}=q\left(\mathbf{v}\times\mathbf{B}\right)$.]]
 
 		local expected = {
-			{"section", {"plaintext", "O monstrengo"}},
-			{"paragraph",
+			{"section", {
+				{"plaintext", "O monstrengo"}
+			}},
+			{"paragraph", {
 				{"plaintext",
 					"O monstrengo que está no fim do mar\n" ..
 					"Na noite de breu ergueu-se a voar;\n" ..
 					"À roda da nau voou três vezes,\n" ..
 					"Voou três vezes a chiar,"
 				}
-			},
-			{"section",
+			}},
+			{"section", {
 				{"plaintext", "Um título de seção com "},
 				{"inlinemath", [[$fórmula = \theta^2$]]},
 				{"plaintext", " incluída"}
-			},
-			{"paragraph",
+			}},
+			{"paragraph", {
 				{"plaintext", "A força que um campo magnético aplica a uma carga movendo-se sobre ele é:\n"},
 				{"inlinemath", [[$\mathbf{F}=q\left(\mathbf{v}\times\mathbf{B}\right)$]]},
 				{"plaintext", "."}
-			}
+			}}
 		}
 
 		local processors = {}
