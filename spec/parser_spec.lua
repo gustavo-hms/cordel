@@ -1,19 +1,10 @@
 parser = require "parser"
 
-local noopfunction = 0
-local mockprocessors = {
-	inlinemath = noopfunction,
-	section = noopfunction,
-	paragraph = noopfunction,
-	plaintext = noopfunction
-}
+local mockprocessors = {}
+mockprocessors.__index = function() return 0 end
 
-local function copytable(t)
-	local tt = {}
-	for k,v in pairs(t) do
-		tt[k] = v
-	end
-	return tt
+function mockprocessors.new()
+	return setmetatable({}, mockprocessors)
 end
 
 local function test(text, expected, processors)
@@ -22,7 +13,7 @@ local function test(text, expected, processors)
 end
 
 describe("An #inlinemath definition", function()
-	local processors = copytable(mockprocessors)
+	local processors = mockprocessors.new()
 	processors.inlinemath = 1
 	processors.paragraph = function(...) return ... end
 
@@ -51,7 +42,7 @@ describe("An #inlinemath definition", function()
 end)
 
 describe("A #section definition", function()
-	local processors = copytable(mockprocessors)
+	local processors = mockprocessors.new()
 	processors.section = function(...) return ... end
 
 	it("should find a simple section", function()
