@@ -1,0 +1,3 @@
+#!/bin/sh
+file=$1
+context --noconsole --batchmode --result=`basename $file .cordel` compiler.cld --arguments=doc=$file

@@ -1,0 +1,26 @@
+parser = require "parser"
+
+local processors = {
+	plaintext = 0,
+	inlinemath = 0
+}
+
+function processors.section(...)
+	context.section(table.concat({...}))
+end
+
+function processors.paragraph(...)
+	context(table.concat({...}))
+end
+
+local M = {}
+
+function M.compile(uri)
+	doc = io.loaddata(uri)
+	context.starttext()
+	parser.parse(doc, processors)
+	context.stoptext()
+end
+
+local doc = string.sub(environment.arguments.arguments, 5)
+M.compile(doc)
