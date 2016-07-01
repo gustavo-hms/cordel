@@ -13,14 +13,8 @@ function processors.paragraph(...)
 	context(table.concat({...}))
 end
 
-local M = {}
-
-function M.compile(uri)
-	doc = io.loaddata(uri)
-	context.starttext()
-	parser.parse(doc, processors)
-	context.stoptext()
-end
-
-local doc = string.sub(environment.arguments.arguments, 5)
-M.compile(doc)
+local file = string.sub(environment.arguments.arguments, 5)
+local doc = io.loaddata(file)
+context.starttext()
+parser.parse(doc, processors)
+context.stoptext()
