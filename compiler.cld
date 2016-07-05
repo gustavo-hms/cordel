@@ -14,7 +14,7 @@ function processors.paragraph(...)
 	context(table.concat({...}))
 end
 
-local file = string.sub(environment.arguments.arguments, 5)
+local file = environment.arguments.arguments:sub(5)
 local doc = io.loaddata(file)
 context.starttext()
 parser.parse(doc, processors)
