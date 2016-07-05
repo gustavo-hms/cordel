@@ -1,5 +1,7 @@
 local lpeg = require "lpeg"
 
+local M = {}; _ENV = M
+
 local P, V = lpeg.P, lpeg.V
 local C, Ct, Cg = lpeg.C, lpeg.Ct, lpeg.Cg
 
@@ -20,9 +22,7 @@ local function buildgrammar(processors)
 	}
 end
 
-local M = {}
-
-function M.parse(text, processors)
+function parse(text, processors)
 	local grammar = buildgrammar(processors)
 	return Ct(grammar):match(text)
 end
