@@ -2,8 +2,9 @@ parser = require "parser"
 table = require "table"
 
 local processors = {
-	plaintext = 0,
-	inlinemath = 0
+	plaintext = 1,
+	inlinemath = 1,
+	emphasize = [[{\em %1}]]
 }
 
 function processors.section(...)

@@ -41,6 +41,32 @@ describe("An #inlinemath definition", function()
 	end)
 end)
 
+describe("An #emphasize definition", function()
+	local processors = mockprocessors.new()
+	processors.emphasize = 1
+	processors.paragraph = function(...) return ... end
+
+	it("should find the emphasized text", function()
+		test([[*com sentimento!*]], {"com sentimento!"}, processors)
+	end)
+
+	it("should match inside a phrase", function()
+		test([[É preciso tocar *com sentimento*!]], {"com sentimento"}, processors)
+	end)
+
+	it("should find two emphasized expressions", function()
+		local input = [[Em ia contente, levava um *brio*, levava *destino*]]
+		local expected = {"brio", "destino"}
+		test(input, expected, processors)
+	end)
+
+	it("shouldn't match if there's a space between text and asterisk", function()
+		local input = [[Em ia contente, levava um *brio *, levava *destino*]]
+		local expected = {"destino"}
+		test(input, expected, processors)
+	end)
+end)
+
 describe("A #section definition", function()
 	local processors = mockprocessors.new()
 	processors.section = function(...) return ... end
@@ -89,8 +115,15 @@ describe("A #complete definition", function()
 Além dessas alterações na própria estrutura da onda sonora, o ouvinte capta um
 outro tipo de informação decorrente do deslocamento do sinal sonoro através do
 espaço de propagação: as diferenças de fase (chamadas ITD, do inglês
-*Interaural Time Difference*) e de intensidade (chamadas ILD, do inglês
-*Interaural Level Difference*) dos sinais que chegam a seu ouvido
+]=]},
+
+				{"emphasize", "Interaural Time Difference"},
+
+				{"plaintext", [=[) e de intensidade (chamadas ILD, do inglês
+]=]},
+				{"emphasize", "Interaural Level Difference"},
+				
+				{"plaintext", [=[) dos sinais que chegam a seu ouvido
 direito e esquerdo. A inserção artificial desses efeitos em um sinal sonoro,
 com o intuito de reconstruir ou modelar uma cena sonora real, é chamada
 auralização [@alton2000master @michael2007auralization].]=]}
@@ -224,6 +257,7 @@ filtros com configuração mais comum.]=]},
 
 		local processors = {}
 		processors.inlinemath = function(text) return {"inlinemath", text} end
+		processors.emphasize = function(text) return {"emphasize", text} end
 		processors.plaintext = function(text) return {"plaintext", text} end
 		processors.paragraph = function(...) return {"paragraph", ...} end
 		processors.section = function(...) return {"section", ...} end

@@ -67,13 +67,11 @@ describe("The #compiler", function()
 Além dessas alterações na própria estrutura da onda sonora, o ouvinte capta um
 outro tipo de informação decorrente do deslocamento do sinal sonoro através do
 espaço de propagação: as diferenças de fase (chamadas ITD, do inglês
-*Interaural Time Difference*) e de intensidade (chamadas ILD, do inglês
-*Interaural Level Difference*) dos sinais que chegam a seu ouvido
+{\em Interaural Time Difference}) e de intensidade (chamadas ILD, do inglês
+{\em Interaural Level Difference}) dos sinais que chegam a seu ouvido
 direito e esquerdo. A inserção artificial desses efeitos em um sinal sonoro,
 com o intuito de reconstruir ou modelar uma cena sonora real, é chamada
-auralização [@alton2000master @michael2007auralization].
-
-]=]},
+auralização [@alton2000master @michael2007auralization].]=]},
 
 			{"context", [=[
 Pensando em termos de processamento de sinais, uma HRTF é, idealmente, um
@@ -82,16 +80,12 @@ que modifica um sinal de entrada $x(n)$ incutindo-lhe as mesmas transformações
 supracitadas, de modo a tornar a saída $y(n)$ igual ao
 sinal sonoro que chega ao ouvido.
 Sendo $h(n)$ a resposta impulsiva desse filtro, a saída desejada será, então,
-calculada através da convolução do sinal de entrada com $h(n)$, definida por:
-
-]=]},
+calculada através da convolução do sinal de entrada com $h(n)$, definida por:]=]},
 
 			{"context", [=[
 $$$ (convolução)
 y(n) = (x*h)(n) = \sum_k x(k)h(n-k).
-$$$
-
-]=]},
+$$$]=]},
 
 			{"context.section", "(cipic) O banco de dados CIPIC"},
 
@@ -102,9 +96,7 @@ indivíduo (cf. figura #esfera-do-cipic). Alto-falantes de 5,8~cm de raio
 foram colocados em diversas posições ao longo da esfera (aproximadamente nos
 pontos exibidos na figura #esfera-do-cipic). Os canais auditivos dos
 indivíduos foram bloqueados e microfones foram utilizados para captar o sinal
-emitido pelos alto-falantes.
-
-]=]},
+emitido pelos alto-falantes.]=]},
 
 			{"context.section", "(resultados) Resultados"},
 
@@ -118,9 +110,7 @@ o método de Kalman, é que, de fato, os números de pólos e de zeros reais
 variam filtro a filtro. A tabela #tab:pzreais mostra a distribuição de
 cada configuração entre os filtros do banco obtidos pelo método de Kalman, e a
 figura #fig:pzreais apresenta graficamente a distribuição espacial dos
-filtros com configuração mais comum.
-
-]=]},
+filtros com configuração mais comum.]=]},
 
 			{"context", [=[
 %{
