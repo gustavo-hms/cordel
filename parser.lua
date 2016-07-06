@@ -9,14 +9,13 @@ local char = lpeg.locale()
 local function inline(delimiter)
 	delimiter = P(delimiter)
 	local not_delimiter = 1 - delimiter
-	local notspace = 1 - char.space
+	local not_space_nor_delimiter = 1 - char.space - delimiter
 
-	return delimiter * C(notspace * not_delimiter^0) * B(notspace) * delimiter
+	return delimiter * C(not_space_nor_delimiter * not_delimiter^0) * B(not_space_nor_delimiter) * delimiter
 end
 
 local function buildgrammar(processors)
 	local any = P(1)
-	local dollar = P"$"
 	local emptyline = P"\n\n"
 
 	return P {
@@ -26,8 +25,8 @@ local function buildgrammar(processors)
 		paragraph = Cg(V"text"^1 * emptyline^-1) / processors.paragraph,
 		text = V"inline" + V"plaintext",
 		inline = V"inlinemath" + V"emphasize",
-		inlinemath = C(dollar * (any - dollar)^0 * dollar) / processors.inlinemath,
-		emphasize = inline("*") / processors.emphasize,
+		inlinemath = inline "$" / processors.inlinemath,
+		emphasize = inline "*" / processors.emphasize,
 		plaintext = C((any - V"inline" - emptyline)^1) / processors.plaintext
 	}
 end

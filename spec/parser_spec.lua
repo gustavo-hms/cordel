@@ -19,25 +19,22 @@ describe("An #inlinemath definition", function()
 
 	it("should find the formulas", function()
 		local text = [[$\sum_{k=1}^10 k^2 = 17$]]
-		local expected = {text}
+		local expected = {[[\sum_{k=1}^10 k^2 = 17]]}
 		test(text, expected, processors)
 	end)
 
-	it("should match only the two dollar signs", function()
-		local expected = {"$$"}
-		test([[$$\sum_{k=1}^10 k^2$]], expected, processors)
+	it("should ignore the first dollar sign", function()
+		test([[$$\sum_{k=1}^10 k^2$]], {[[\sum_{k=1}^10 k^2]]}, processors)
 	end)
 
-	it("should find only spaces", function()
-		local expected = {"$ $"}
-		test([[$ $\sum_{k=1}^10 k^2$]], expected, processors)
+	it("shouldn't match if there's a space between text and $", function()
+		test([[$ \sum_{k=1}^10 k^2$]], {[[$ \sum_{k=1}^10 k^2$]]}, processors)
 	end)
 
 	it("should find two inline math expressions", function()
-		local firstpart = [[$\sum_{k=1}^10$]]
-		local secondpart = [[$ k^2$]]
-		local expected = {firstpart, secondpart}
-		test(firstpart .. [[ algo no meio ]] .. secondpart, expected, processors)
+		local input = [[$\sum_{k=1}^10$ algo no meio $k^2$]]
+		local expected = {[[\sum_{k=1}^10]], "k^2"}
+		test(input, expected, processors)
 	end)
 end)
 
@@ -134,41 +131,37 @@ auralização [@alton2000master @michael2007auralization].]=]}
 Pensando em termos de processamento de sinais, uma HRTF é, idealmente, um
 filtro %--- cuja função de transferência é, digamos, ]=]},
 
-				{"inlinemath", "$H(z)$"},
+				{"inlinemath", "H(z)"},
 
 				{"plaintext", [=[ --- 
 que modifica um sinal de entrada ]=]},
 
-				{"inlinemath", "$x(n)$"},
+				{"inlinemath", "x(n)"},
 
 				{"plaintext", [=[ incutindo-lhe as mesmas transformações
 supracitadas, de modo a tornar a saída ]=]},
 
-				{"inlinemath", "$y(n)$"},
+				{"inlinemath", "y(n)"},
 
 				{"plaintext", [=[ igual ao
 sinal sonoro que chega ao ouvido.
 Sendo ]=]},
 
-				{"inlinemath", "$h(n)$"},
+				{"inlinemath", "h(n)"},
 
 				{"plaintext", [=[ a resposta impulsiva desse filtro, a saída desejada será, então,
 calculada através da convolução do sinal de entrada com ]=]},
 
-				{"inlinemath", "$h(n)$"},
+				{"inlinemath", "h(n)"},
 
 				{"plaintext", ", definida por:"}
 			},
 
 			{"paragraph",
-				{"inlinemath", "$$"},
-
-			    {"inlinemath", [=[
-$ (convolução)
+				{"plaintext",[=[
+$$$ (convolução)
 y(n) = (x*h)(n) = \sum_k x(k)h(n-k).
-$]=]},
-
-				{"inlinemath", "$$"},
+$$$]=]}
 			},
 
 			{"section", {"plaintext", "(cipic) O banco de dados CIPIC"}},
@@ -239,19 +232,13 @@ filtros com configuração mais comum.]=]},
 %	filtros de algumas ordens diferentes.
 %}
 %
-%]=]},
-				{"inlinemath", "$$"},
-			
-				{"inlinemath", [=[$
+%$$$
 %{
 %	| f(x) = { | 1, x < 3; |
 %    |          | 0, c.c.   |
 %}
-%$]=]},
-
-				{"inlinemath", "$$"},
-
-				{"plaintext", "\n"}
+%$$$
+]=]},
 			}
 		}
 
