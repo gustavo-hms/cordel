@@ -244,6 +244,7 @@ filtros com configuração mais comum.]=]},
 
 		local processors = {}
 		processors.inlinemath = function(text) return {"inlinemath", text} end
+		processors.strong = function(text) return {"strong", text} end
 		processors.emphasize = function(text) return {"emphasize", text} end
 		processors.plaintext = function(text) return {"plaintext", text} end
 		processors.paragraph = function(...) return {"paragraph", ...} end

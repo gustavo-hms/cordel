@@ -4,6 +4,7 @@ table = require "table"
 local processors = {
 	plaintext = 1,
 	inlinemath = [[$%1$]],
+	strong = [[{\bf %1}]],
 	emphasize = [[{\em %1}]]
 }
 

@@ -24,8 +24,9 @@ local function buildgrammar(processors)
 		section = P"# " * Cg(V"text"^1) * emptyline^-1 / processors.section,
 		paragraph = Cg(V"text"^1 * emptyline^-1) / processors.paragraph,
 		text = V"inline" + V"plaintext",
-		inline = V"inlinemath" + V"emphasize",
+		inline = V"inlinemath" + V"strong" + V"emphasize",
 		inlinemath = inline "$" / processors.inlinemath,
+		strong = inline "**" / processors.strong,
 		emphasize = inline "*" / processors.emphasize,
 		plaintext = C((any - V"inline" - emptyline)^1) / processors.plaintext
 	}
