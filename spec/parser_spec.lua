@@ -64,6 +64,32 @@ describe("An #emphasize definition", function()
 	end)
 end)
 
+describe("A #strong definition", function()
+	local processors = mockprocessors.new()
+	processors.strong = 1
+	processors.paragraph = function(...) return ... end
+
+	it("should find the strong text", function()
+		test([[**com sentimento!**]], {"com sentimento!"}, processors)
+	end)
+
+	it("should match inside a phrase", function()
+		test([[É preciso tocar **com sentimento**!]], {"com sentimento"}, processors)
+	end)
+
+	it("should find two strong expressions", function()
+		local input = [[Em ia contente, levava um **brio**, levava **destino**]]
+		local expected = {"brio", "destino"}
+		test(input, expected, processors)
+	end)
+
+	it("shouldn't match if there's a space between text and asterisk", function()
+		local input = [[Em ia contente, levava um **brio **, levava **destino**]]
+		local expected = {"destino"}
+		test(input, expected, processors)
+	end)
+end)
+
 describe("A #section definition", function()
 	local processors = mockprocessors.new()
 	processors.section = function(...) return ... end
