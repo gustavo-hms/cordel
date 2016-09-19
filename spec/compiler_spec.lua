@@ -69,12 +69,12 @@ outro tipo de informação decorrente do deslocamento do sinal sonoro através d
 espaço de propagação: as diferenças de fase (chamadas ITD, do inglês
 {\em Interaural Time Difference}) e de intensidade (chamadas ILD, do inglês
 {\em Interaural Level Difference}) dos sinais que chegam a seu ouvido
-direito e esquerdo. A inserção artificial desses efeitos em um sinal sonoro,
+direito e esquerdo. A {\bf inserção artificial} desses efeitos em um sinal sonoro,
 com o intuito de reconstruir ou modelar uma cena sonora real, é chamada
-auralização [@alton2000master @michael2007auralization].]=]},
+{\bf auralização} [@alton2000master @michael2007auralization].]=]},
 
 			{"context", [=[
-Pensando em termos de processamento de sinais, uma HRTF é, idealmente, um
+Pensando em termos de **processamento ** de sinais, uma HRTF é, idealmente, um
 filtro %--- cuja função de transferência é, digamos, $H(z)$ --- 
 que modifica um sinal de entrada $x(n)$ incutindo-lhe as mesmas transformações
 supracitadas, de modo a tornar a saída $y(n)$ igual ao
